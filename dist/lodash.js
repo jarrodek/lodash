@@ -1,7 +1,6 @@
 /**
  * @license
- * lodash 4.6.1 (Custom Build) <https://lodash.com/>
- * Build: `lodash -o ./dist/lodash.js`
+ * lodash 4.6.1 <https://lodash.com/>
  * Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
  * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -2708,10 +2707,16 @@
       path = isKey(path, object) ? [path + ''] : baseCastPath(path);
 
       var index = 0,
+          part,
           length = path.length;
 
       while (object != null && index < length) {
-        object = object[path[index++]];
+        part = path[index++];
+        if (isArrayLike(object) && /^-\d+$/.test(part)) {
+          part = object.length + (+part);
+        }
+
+        object = object[part];
       }
       return (index && index == length) ? object : undefined;
     }
@@ -5087,10 +5092,16 @@
       var result = hasFunc(object, path);
       if (!result && !isKey(path)) {
         path = baseCastPath(path);
-        object = parent(object, path);
-        if (object != null) {
-          path = last(path);
-          result = hasFunc(object, path);
+
+        var index = -1,
+            length = path.length;
+
+        while (object != null && ++index < length) {
+          var key = path[index];
+          if (!(result = hasFunc(object, key))) {
+            break;
+          }
+          object = object[key];
         }
       }
       var length = object ? object.length : undefined;
@@ -5391,7 +5402,7 @@
      * @returns {*} Returns the parent value.
      */
     function parent(object, path) {
-      return path.length == 1 ? object : get(object, baseSlice(path, 0, -1));
+      return path.length == 1 ? object : baseGet(object, baseSlice(path, 0, -1));
     }
 
     /**
@@ -11873,7 +11884,7 @@
     function result(object, path, defaultValue) {
       if (!isKey(path, object)) {
         path = baseCastPath(path);
-        var result = get(object, path);
+        var result = baseGet(object, path);
         object = parent(object, path);
       } else {
         result = object == null ? undefined : object[path];

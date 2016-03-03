@@ -1,0 +1,18 @@
+{
+  "name": "lodash",
+  "version": "4.6.1-arc2",
+  "main": "lodash.js",
+  "private": true,
+  "description": "Fork of lodash to support ARC",
+  "ignore": [
+    ".github",
+    "doc",
+    "fp",
+    "lib",
+    "perf",
+    "test",
+    "vendor"
+    ".*",
+    "CODE_OF_CONDUCT.md"
+  ]
+}
