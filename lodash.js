@@ -2707,10 +2707,16 @@
       path = isKey(path, object) ? [path + ''] : baseCastPath(path);
 
       var index = 0,
+          part,
           length = path.length;
 
       while (object != null && index < length) {
-        object = object[path[index++]];
+        part = path[index++];
+        if (isArrayLike(object) && /^-\d+$/.test(part)) {
+          part = object.length + (+part);
+        }
+
+        object = object[part];
       }
       return (index && index == length) ? object : undefined;
     }
